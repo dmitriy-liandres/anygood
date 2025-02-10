@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="what_product_hint">ما المنتج الذي تبحث عنه؟</string>
+    <string name="start">ابدأ</string>
+    <string name="your_answer_hint">إجابتك</string>
+    <string name="next">التالي</string>
+    <string name="no_preference">لا يوجد تفضيل</string>
+    <string name="buy">اشترِ</string>
+    <string name="start_again">ابدأ من جديد</string>
+    <string name="please_select_or_type">يرجى اختيار خيار أو إدخال نص.</string>
+</resources>

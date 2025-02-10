@@ -1,0 +1,11 @@
+// build.gradle (Project-level)
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+
+        // Другие classpath зависимости, если требуются
+    }
+}

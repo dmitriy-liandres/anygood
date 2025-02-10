@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- A neutral palette with a soft accent color -->
+    <color name="colorPrimary">#424242</color>        <!-- Dark gray -->
+    <color name="colorPrimaryVariant">#303030</color> <!-- Darker gray -->
+    <color name="colorAccent">#F48FB1</color>         <!-- Subtle pastel pink for accent -->
+    <color name="colorBackground">#F7F7F7</color>     <!-- Light gray for main background -->
+    <color name="colorSurface">#FFFFFF</color>        <!-- White for card surfaces -->
+    <color name="colorOnPrimary">#FFFFFF</color>      <!-- White text on primary/dark surfaces -->
+    <color name="colorOnSurface">#212121</color>      <!-- Dark text on surface -->
+    <color name="colorOnAccent">#FFFFFF</color>       <!-- White text on accent -->
+</resources>

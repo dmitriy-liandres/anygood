@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="what_product_hint">Какой продукт вы ищете?</string>
+    <string name="please_select_or_type">Пожалуйста, выберите вариант или введите свой текст.</string>
+    <string name="start">Начать</string>
+    <string name="your_answer_hint">Ваш ответ</string>
+    <string name="next">Далее</string>
+    <string name="no_preference">Без предпочтений</string>
+    <string name="buy">Найти</string>
+    <string name="start_again">Начать заново</string>
+</resources>

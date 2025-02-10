@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme using Material Components -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Primary palette -->
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="android:textColor">@color/colorOnSurface</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+        <item name="colorSecondary">@color/colorAccent</item>
+
+        <!-- More default UI settings -->
+        <item name="android:statusBarColor">@color/colorPrimaryVariant</item>
+        <item name="android:navigationBarColor">@color/colorPrimaryVariant</item>
+
+        <!-- Let’s apply custom button and card styles by default -->
+        <item name="android:buttonStyle">@style/ModernButtonStyle</item>
+        <item name="materialButtonStyle">@style/ModernButtonStyle</item>
+        <item name="materialCardViewStyle">@style/ModernCardStyle</item>
+    </style>
+
+    <!-- A slightly rounded MaterialButton with an accent color. -->
+    <style name="ModernButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_margin">8dp</item>
+        <item name="backgroundTint">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorOnAccent</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="android:paddingLeft">24dp</item>
+        <item name="android:paddingRight">24dp</item>
+    </style>
+
+    <!-- MaterialCardView style with subtle elevation and rounding. -->
+    <style name="ModernCardStyle" parent="Widget.MaterialComponents.CardView">
+        <item name="cardUseCompatPadding">true</item>
+        <item name="cardPreventCornerOverlap">true</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="android:layout_margin">8dp</item>
+    </style>
+</resources>

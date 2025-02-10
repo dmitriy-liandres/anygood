@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="what_product_hint">איזה מוצר אתה מחפש?</string>
+    <string name="start">התחל</string>
+    <string name="please_select_or_type">אנא בחר אפשרות או הזן טקסט משלך.</string>
+    <string name="your_answer_hint">תשובתך</string>
+    <string name="next">הבא</string>
+    <string name="no_preference">אין העדפה</string>
+    <string name="buy">קנה</string>
+    <string name="start_again">התחל מחדש</string>
+</resources>
