@@ -9,4 +9,6 @@
     <color name="colorOnPrimary">#FFFFFF</color>      <!-- White text on primary/dark surfaces -->
     <color name="colorOnSurface">#212121</color>      <!-- Dark text on surface -->
     <color name="colorOnAccent">#FFFFFF</color>       <!-- White text on accent -->
+    <color name="ic_launcher_bg_color">#673AB7</color> <!-- Example purple -->
+    <color name="ic_launcher_bg_color_round">#9C27B0</color> <!-- Slightly different -->
 </resources>

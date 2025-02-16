@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">AnyGood Store</string>
     <string name="what_product_hint">Какой продукт вы ищете?</string>
     <string name="please_select_or_type">Пожалуйста, выберите вариант или введите свой текст.</string>
     <string name="start">Начать</string>
@@ -8,4 +9,8 @@
     <string name="no_preference">Без предпочтений</string>
     <string name="buy">Найти</string>
     <string name="start_again">Начать заново</string>
+    <string name="save">Сохранить</string>
+    <string name="additional_info_question">Добавьте любую дополнительную информацию (до 100 символов)</string>
+    <string name="max_hundred_chars">Максимум 100 символов</string>
+    <string name="error_general">Возникла ошибка. Пожалуйста, попробуйте позже.</string>
 </resources>

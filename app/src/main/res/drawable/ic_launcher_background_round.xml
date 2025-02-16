@@ -1,0 +1,6 @@
+<!-- app/src/main/res/drawable/ic_launcher_background_round.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- Could be the same color or a different one -->
+    <solid android:color="@color/ic_launcher_bg_color_round" />
+</shape>

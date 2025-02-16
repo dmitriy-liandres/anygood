@@ -1,47 +1,54 @@
 package store.anygood;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import store.anygood.model.Product;
+import store.anygood.model.Question;
+import store.anygood.model.QuestionWithAnswer;
+
 
 public class MainActivity extends AppCompatActivity {
 
     // UI elements for the initial query
     private TextInputEditText editTextQuery;
     private MaterialButton buttonStart;
-    private Spinner spinnerLanguage;
-    private Spinner spinnerCountry;
-
     // Questionnaire UI elements
     private LinearLayout layoutQuestions;
     private TextView textQuestion;
-    private RadioGroup radioGroup;
+    private LinearLayout checkboxContainer;
     private TextInputLayout freeTextInputLayout;
     private TextInputEditText editTextFree;
     private MaterialButton buttonNext;
@@ -60,58 +67,34 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isAdditionalInfoPhase = false; // after 5 ChatGPT questions
 
+    private static final int REQUEST_SETTINGS = 1001; // or any unique integer
+
+    private static final ChatGPTClient chatGPTClient = new ChatGPTClient();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // 1) Load user’s stored language
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        String savedLanguage = prefs.getString("selectedLanguage", "English");
+
+        // 2) Update the locale *before* calling super.onCreate
+        updateLocale(savedLanguage);
+
         super.onCreate(savedInstanceState);
-        // Locale is applied from resources.
         setContentView(R.layout.activity_main);
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // Initial query views
         editTextQuery = findViewById(R.id.editTextQuery);
         buttonStart = findViewById(R.id.buttonStart);
-        spinnerLanguage = findViewById(R.id.spinnerLanguage);
-        spinnerCountry = findViewById(R.id.spinnerCountry);
-
-        // Populate language spinner from resource arrays
-        String[] languages = getResources().getStringArray(R.array.languages);
-        ArrayAdapter<String> languageAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, languages);
-        languageAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerLanguage.setAdapter(languageAdapter);
-
-        // Set listener for language spinner to update the locale dynamically
-        spinnerLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            private boolean isFirstCall = true; // avoid triggering on initial setup
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedLanguage = (String) parent.getItemAtPosition(position);
-                String languageCode = getLanguageCode(selectedLanguage);
-                if (!languageCode.equals(getCurrentLanguageCode())) {
-                    if (!isFirstCall) {
-                        updateLocale(languageCode);
-                    }
-                }
-                isFirstCall = false;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        // Populate country spinner from resource arrays
-        String[] countries = getResources().getStringArray(R.array.countries);
-        ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, countries);
-        countryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCountry.setAdapter(countryAdapter);
 
         // Questionnaire views
         layoutQuestions = findViewById(R.id.layoutQuestions);
         textQuestion = findViewById(R.id.textQuestion);
-        radioGroup = findViewById(R.id.radioGroupOptions);
+        checkboxContainer = findViewById(R.id.checkboxContainer);
         freeTextInputLayout = findViewById(R.id.freeTextInputLayout);
         editTextFree = findViewById(R.id.editTextFree);
         buttonNext = findViewById(R.id.buttonNext);
@@ -135,8 +118,23 @@ public class MainActivity extends AppCompatActivity {
             layoutQuestions.setVisibility(View.VISIBLE);
 
 
-            // Now fetch the first question from ChatGPT
-            fetchNextQuestion();  // calls generateNextQuestion or similar
+            chatGPTClient.login("null", "null", new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    runOnUiThread(() ->
+                            Toast.makeText(MainActivity.this, getString(R.string.error_general), Toast.LENGTH_LONG).show()
+                    );
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    runOnUiThread(() -> {
+                        fetchNextQuestion();
+                    });
+                }
+            });
+
+
         });
 
         buttonNext.setOnClickListener(v -> {
@@ -144,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 // This is the final hard-coded question
                 String additionalInfo = editTextFree.getText().toString().trim();
                 if (additionalInfo.length() > 100) {
-                    Toast.makeText(this, "Max 100 characters allowed!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.max_hundred_chars), Toast.LENGTH_SHORT).show();
                     return;
                 }
                 // Now get recommendations or finish
@@ -154,14 +152,14 @@ public class MainActivity extends AppCompatActivity {
 
 
             // Otherwise, user is answering a ChatGPT question
-            String answer = getUserAnswer();
-            if (answer.isEmpty()) {
+            List<String> answers = getUserAnswer();
+            if (answers.isEmpty()) {
                 Toast.makeText(this, getString(R.string.please_select_or_type), Toast.LENGTH_SHORT).show();
                 return;
             }
 
             QuestionWithAnswer questionWithAnswer = questionsWithAnswers.get(questionsWithAnswers.size() - 1);
-            questionWithAnswer.setAnswer(answer);
+            questionWithAnswer.setAnswers(answers);
 
             // Append question & answer to conversation
 
@@ -173,29 +171,46 @@ public class MainActivity extends AppCompatActivity {
                 showAdditionalInfoQuestion();
             }
         });
-        editTextFree.setOnTouchListener((v, event) -> {
-            radioGroup.clearCheck();
-            return false;
-        });
+    }
 
-        radioGroup.setOnCheckedChangeListener((group, checkedId) -> editTextFree.setText(""));
+    private void updateLocale(String language) {
+        // same approach: map "Russian" -> "ru" etc.
+        String languageCode = SettingsActivity.mapLanguageNameToCode(language);
 
+        Locale locale = new Locale(languageCode);
+        Locale.setDefault(locale);
+
+        Resources res = getResources();
+        Configuration config = res.getConfiguration();
+        config.setLocale(locale);
+
+        res.updateConfiguration(config, res.getDisplayMetrics());
     }
 
     private void fetchNextQuestion() {
         progressBar.setVisibility(View.VISIBLE);
         layoutQuestions.setVisibility(View.GONE);
-        ChatGPTClient.generateNextQuestion(initialQuery,
-                spinnerCountry.getSelectedItem().toString(),
-                spinnerLanguage.getSelectedItem().toString(),
+
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        String savedLanguage = prefs.getString("selectedLanguage", "English");
+        String savedCountry = prefs.getString("selectedCountry", "United States");
+
+
+        chatGPTClient.generateNextQuestion(initialQuery,
+                savedCountry,
+                savedLanguage,
                 questionsWithAnswers,
                 new ChatGPTClient.NextQuestionCallback() {
                     @Override
                     public void onQuestionReceived(Question question) {
                         runOnUiThread(() -> {
                             // Show question in UI
-                            questionsWithAnswers.add(new QuestionWithAnswer(question));
-                            showCurrentQuestion();
+                            if (question.isLast()) {
+                                showAdditionalInfoQuestion();
+                            } else {
+                                questionsWithAnswers.add(new QuestionWithAnswer(question));
+                                showCurrentQuestion();
+                            }
                         });
                     }
 
@@ -211,21 +226,25 @@ public class MainActivity extends AppCompatActivity {
 
     private void showCurrentQuestion() {
         // Clear UI
-        radioGroup.removeAllViews();
-        editTextFree.setText("");
+        checkboxContainer.removeAllViews();
+        checkboxContainer.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
-        radioGroup.setVisibility(View.VISIBLE);
+
+
+
         layoutQuestions.setVisibility(View.VISIBLE);
 
         Question currentQuestion = questionsWithAnswers.get(questionsWithAnswers.size() - 1).getQuestion();
 
         textQuestion.setText(currentQuestion.getText());
+        editTextFree.setText("");
+
         if (!currentQuestion.getOptions().isEmpty()) {
             // Add each option
             for (String opt : currentQuestion.getOptions()) {
-                RadioButton rb = new RadioButton(this);
-                rb.setText(opt);
-                radioGroup.addView(rb);
+                CheckBox cb = new CheckBox(this);
+                cb.setText(opt);
+                checkboxContainer.addView(cb);
             }
             // Show or hide free texteditTextFree.setVisibility(View.VISIBLE);
         }
@@ -240,18 +259,27 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private String getUserAnswer() {
-        // If there's a checked radio, use that
-        int checkedId = radioGroup.getCheckedRadioButtonId();
-        if (checkedId != -1) {
-            RadioButton rb = findViewById(checkedId);
-            return rb.getText().toString();
+    private List<String> getUserAnswer() {
+        List<String> selectedOptions = new ArrayList<>();
+
+        int childCount = checkboxContainer.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View child = checkboxContainer.getChildAt(i);
+            if (child instanceof CheckBox) {
+                CheckBox cb = (CheckBox) child;
+                if (cb.isChecked()) {
+                    selectedOptions.add(cb.getText().toString());
+                }
+            }
         }
-        // Else, if free text is visible, use that
-        if (editTextFree.getVisibility() == View.VISIBLE) {
-            return editTextFree.getText().toString().trim();
+
+        if (editTextFree.getVisibility() == View.VISIBLE ) {
+            String text = editTextFree.getText().toString().trim();
+            if(text.length() > 0) {
+                selectedOptions.add(editTextFree.getText().toString().trim());
+            }
         }
-        return "";
+        return selectedOptions;
     }
 
     private void showAdditionalInfoQuestion() {
@@ -259,57 +287,30 @@ public class MainActivity extends AppCompatActivity {
         isAdditionalInfoPhase = true;
 
         // Clear UI
-        radioGroup.removeAllViews();
-        radioGroup.setVisibility(View.GONE);
+        checkboxContainer.removeAllViews();
+        checkboxContainer.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
 
-        textQuestion.setText("Provide any additional info (max 100 characters)");
+        textQuestion.setText(getString(R.string.additional_info_question));
         editTextFree.setText("");
+
+        layoutQuestions.setVisibility(View.VISIBLE);
+
         freeTextInputLayout.setVisibility(View.VISIBLE);
         editTextFree.setVisibility(View.VISIBLE);
-    }
-
-    // Helper: Map language names to locale codes.
-    private String getLanguageCode(String language) {
-        switch (language) {
-            case "Russian":
-                return "ru";
-            case "Hebrew":
-                return "he";
-            case "Arabic":
-                return "ar";
-            case "German":
-                return "de";
-            case "French":
-                return "fr";
-            case "English":
-            default:
-                return "en";
-        }
-    }
-
-    // Helper: Get the current language code.
-    private String getCurrentLanguageCode() {
-        return getResources().getConfiguration().locale.getLanguage();
-    }
-
-    // Update the locale and recreate the activity.
-    private void updateLocale(String languageCode) {
-        Locale locale = new Locale(languageCode);
-        Locale.setDefault(locale);
-        Resources res = getResources();
-        Configuration config = res.getConfiguration();
-        config.setLocale(locale);
-        res.updateConfiguration(config, res.getDisplayMetrics());
-        recreate();
     }
 
     private void finishQuestionnaire() {
         progressBar.setVisibility(View.VISIBLE);
         layoutQuestions.setVisibility(View.GONE);
-        ChatGPTClient.getProductRecommendations(initialQuery,
-                spinnerCountry.getSelectedItem().toString(),
-                spinnerLanguage.getSelectedItem().toString(),
+
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        String savedLanguage = prefs.getString("selectedLanguage", "English");
+        String savedCountry = prefs.getString("selectedCountry", "United States");
+
+        chatGPTClient.getProductRecommendations(initialQuery,
+                savedCountry,
+                savedLanguage,
                 questionsWithAnswers,
                 editTextFree.getText().toString(),
                 new ChatGPTClient.RecommendationsCallback() {
@@ -394,5 +395,34 @@ public class MainActivity extends AppCompatActivity {
         buttonStart.setVisibility(View.VISIBLE);
         editTextQuery.setText("");
         isAdditionalInfoPhase = false;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            // Open the new SettingsActivity
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivityForResult(intent, REQUEST_SETTINGS);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_SETTINGS && resultCode == Activity.RESULT_OK) {
+            // The user changed the language
+            SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+            String savedLanguage = prefs.getString("selectedLanguage", "English");
+            updateLocale(savedLanguage);
+            recreate(); // Now this re-creates MainActivity in the new language
+        }
     }
 }

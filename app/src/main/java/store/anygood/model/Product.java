@@ -1,4 +1,4 @@
-package store.anygood;
+package store.anygood.model;
 
 public class Product {
     private String name;
