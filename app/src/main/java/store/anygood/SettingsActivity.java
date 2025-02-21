@@ -7,15 +7,17 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import java.util.Locale;
 
 public class SettingsActivity extends AppCompatActivity {
-    private Spinner spinnerLanguage, spinnerCountry;
+    private AutoCompleteTextView dropdownLanguage, dropdownCountry ;
     private Button buttonSave;
     private SharedPreferences prefs;
 
@@ -24,43 +26,40 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        spinnerLanguage = findViewById(R.id.spinnerLanguage);
-        spinnerCountry = findViewById(R.id.spinnerCountry);
+        dropdownLanguage = findViewById(R.id.dropdownCountry);
+        dropdownCountry = findViewById(R.id.dropdownLanguage);
         buttonSave = findViewById(R.id.buttonSave);
 
         // Setup spinners
         String[] languages = {"English", "Русский", "עברית"};
-        ArrayAdapter<String> langAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, languages);
-        langAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerLanguage.setAdapter(langAdapter);
+        ArrayAdapter<String> languageAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, languages);
+        dropdownLanguage.setAdapter(languageAdapter);
 
         String[] countries = {"United States", "Россия", "ישראל"};
-        ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, countries);
-        countryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCountry.setAdapter(countryAdapter);
+        ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, countries);
+        dropdownCountry.setAdapter(countryAdapter);
+
+        // Ensure dropdown opens when clicked
+        dropdownLanguage.setOnClickListener(v -> dropdownLanguage.showDropDown());
+        dropdownCountry.setOnClickListener(v -> dropdownCountry.showDropDown());
+
 
         // Load saved prefs
         prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         String savedLanguage = prefs.getString("selectedLanguage", "English");
         String savedCountry = prefs.getString("selectedCountry", "United States");
 
-        // Set the spinner positions to match saved preferences
-        int langPos = langAdapter.getPosition(savedLanguage);
-        spinnerLanguage.setSelection(langPos);
-
-        int countryPos = countryAdapter.getPosition(savedCountry);
-        spinnerCountry.setSelection(countryPos);
+        dropdownCountry.setText(savedCountry, false);
+        dropdownLanguage.setText(savedLanguage, false);
 
         buttonSave.setOnClickListener(v -> {
             // Save selected values in SharedPreferences
-            String selectedLang = (String) spinnerLanguage.getSelectedItem();
-            String selectedCtry = (String) spinnerCountry.getSelectedItem();
+            String selectedLang = dropdownLanguage.getText().toString();
+            String selectedCountry = dropdownCountry.getText().toString();
 
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("selectedLanguage", selectedLang);
-            editor.putString("selectedCountry", selectedCtry);
+            editor.putString("selectedCountry", selectedCountry);
             editor.apply();
 
             // Optionally show a toast
@@ -75,6 +74,10 @@ public class SettingsActivity extends AppCompatActivity {
             setResult(Activity.RESULT_OK);
             finish();
         });
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed()); // Manually trigger back press
+
     }
 
     private void updateLocale(String language) {
@@ -112,6 +115,11 @@ public class SettingsActivity extends AppCompatActivity {
             default:
                 return "en"; // English fallback
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
 }

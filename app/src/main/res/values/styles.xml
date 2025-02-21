@@ -20,14 +20,15 @@
     </style>
 
     <!-- A slightly rounded MaterialButton with an accent color. -->
-    <style name="ModernButtonStyle" parent="Widget.MaterialComponents.Button">
+      <style name="ModernButtonStyle" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_margin">8dp</item>
-        <item name="backgroundTint">@color/colorAccent</item>
-        <item name="android:textColor">@color/colorOnAccent</item>
+        <item name="backgroundTint">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorButtonText</item>
         <item name="cornerFamily">rounded</item>
-        <item name="cornerRadius">16dp</item>
+        <item name="cornerRadius">24dp</item>
         <item name="android:paddingLeft">24dp</item>
         <item name="android:paddingRight">24dp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <!-- MaterialCardView style with subtle elevation and rounding. -->
@@ -38,4 +39,34 @@
         <item name="cardElevation">4dp</item>
         <item name="android:layout_margin">8dp</item>
     </style>
+	
+	<style name="TextInputStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxBackgroundMode">filled</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+    </style>
+	
+	<!--settings-->
+	
+	<style name="SettingsTitleText" parent="TextAppearance.MaterialComponents.Headline6">
+		<item name="android:textSize">24sp</item>
+		<item name="android:textStyle">bold</item>
+		<item name="android:textColor">@color/colorOnSurface</item>
+	</style>
+
+	<style name="SettingsDropdownStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+		<item name="boxBackgroundMode">filled</item>
+		<item name="boxBackgroundColor">@color/colorDropdownBackground</item>
+		<item name="android:textColor">@color/colorOnSurface</item>
+		<item name="hintTextColor">@color/colorPrimary</item>
+	</style>
+
+	<style name="SettingsButtonStyle" parent="Widget.MaterialComponents.Button">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:backgroundTint">@color/colorPrimary</item>
+		<item name="android:textColor">@color/colorOnPrimary</item>
+		<item name="cornerRadius">16dp</item>
+	</style>
 </resources>

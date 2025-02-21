@@ -1,49 +1,83 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/colorBackground">
 
-    <TextView
-        android:id="@+id/titleSettings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Settings"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+    <!-- Toolbar with Back Button -->
+	  <com.google.android.material.appbar.MaterialToolbar
+			android:id="@+id/toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="84dp"
+			android:background="@color/colorBackground"
+			app:navigationIcon="?attr/homeAsUpIndicator"
+			app:titleTextAppearance="@style/SettingsTitleText"
+			android:title="@string/settings"
+			app:contentInsetStart="16dp"
+			app:contentInsetStartWithNavigation="16dp"
+			android:paddingTop="16dp"/> 
+		/> 
 
-    <TextView
-        android:id="@+id/textLanguage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Language:"
-        android:layout_marginTop="8dp" />
+		
 
-    <Spinner
-        android:id="@+id/spinnerLanguage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp" />
 
-    <TextView
-        android:id="@+id/textCountry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Country:"
-        android:layout_marginTop="8dp" />
 
-    <Spinner
-        android:id="@+id/spinnerCountry"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp" />
+	<!-- Country Dropdown -->
+	<com.google.android.material.textfield.TextInputLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/country"
+		app:endIconMode="dropdown_menu"
+		app:boxBackgroundMode="outline"
+		android:paddingStart="8dp"
+		android:paddingEnd="8dp">
 
-    <Button
+		<AutoCompleteTextView
+			android:id="@+id/dropdownCountry"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingStart="16dp" 
+			android:paddingEnd="16dp"
+			android:inputType="none"
+			android:focusable="false"
+			android:textColor="@color/colorOnSurface"
+			android:textSize="16sp"/>
+	</com.google.android.material.textfield.TextInputLayout>
+
+	<com.google.android.material.textfield.TextInputLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:hint="@string/language"
+		app:endIconMode="dropdown_menu"
+		app:boxBackgroundMode="outline"
+		android:paddingStart="8dp"
+		android:paddingEnd="8dp">
+
+		<AutoCompleteTextView
+			android:id="@+id/dropdownLanguage"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingStart="16dp"
+			android:paddingEnd="16dp"
+			android:inputType="none"
+			android:focusable="false"
+			android:textColor="@color/colorOnSurface"
+			android:textSize="16sp"/>
+	</com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+    <!-- Save Button -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonSave"
-        android:layout_width="wrap_content"
+        style="@style/SettingsButtonStyle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/save"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="32dp"/>
 </LinearLayout>

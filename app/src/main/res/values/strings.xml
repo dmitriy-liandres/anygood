@@ -13,4 +13,8 @@
     <string name="additional_info_question">Provide any additional info (max 100 characters)</string>
     <string name="max_hundred_chars">Max 100 characters allowed</string>
     <string name="error_general">There was an error, please try again later.</string>
+
+    <string name="settings">Settings</string>
+    <string name="country">Country</string>
+    <string name="language">Language</string>
 </resources>

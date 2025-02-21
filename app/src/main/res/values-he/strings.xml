@@ -13,4 +13,8 @@
     <string name="additional_info_question">הוסף מידע נוסף (עד 100 תווים)</string>
     <string name="max_hundred_chars">מקסימום 100 תווים מותר</string>
     <string name="error_general">הייתה שגיאה, אנא נסה שוב מאוחר יותר.</string>
+
+    <string name="settings">הגדרות</string>
+    <string name="country">מדינה</string>
+    <string name="language">שפה</string>
 </resources>

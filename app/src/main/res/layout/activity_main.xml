@@ -7,151 +7,152 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.MaterialToolbar
-		android:id="@+id/toolbar"
-		android:layout_width="match_parent"
-		android:layout_height="?attr/actionBarSize"
-		android:layout_marginTop="?attr/actionBarSize"
-		android:background="@color/colorPrimary"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp"
-		app:titleTextColor="@android:color/white" />
-		
-		
-		
-		
-	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-		xmlns:app="http://schemas.android.com/apk/res-auto"
-		android:id="@+id/scrollContainer"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:background="@color/colorBackground"
-		android:padding="16dp">
-		
-
-		<androidx.constraintlayout.widget.ConstraintLayout
-			android:id="@+id/mainLayout"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
-			
-
-			<!-- Container for initial input (query, spinners) -->
-			<LinearLayout
-				android:id="@+id/initialInputLayout"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:orientation="vertical"
-				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintEnd_toEndOf="parent"
-				android:layout_marginTop="16dp">
-
-				<!-- Query input -->
-				<com.google.android.material.textfield.TextInputLayout
-					android:id="@+id/inputLayout"
-					style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					app:boxBackgroundMode="filled"
-					android:layout_marginBottom="12dp">
-
-					<com.google.android.material.textfield.TextInputEditText
-						android:id="@+id/editTextQuery"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:hint="@string/what_product_hint"/>
-				</com.google.android.material.textfield.TextInputLayout>
-
-			</LinearLayout>
-
-			<!-- Start Button -->
-			<com.google.android.material.button.MaterialButton
-				android:id="@+id/buttonStart"
-				style="@style/ModernButtonStyle"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/start"
-				app:layout_constraintTop_toBottomOf="@id/initialInputLayout"
-				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintEnd_toEndOf="parent"
-				android:layout_marginTop="16dp"
-				android:layout_marginBottom="16dp"/>
-
-			<!-- ProgressBar for loading -->
-			<ProgressBar
-				android:id="@+id/progressBar"
-				style="?android:attr/progressBarStyleLarge"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:visibility="gone"
-				app:layout_constraintTop_toBottomOf="@id/buttonStart"
-				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintEnd_toEndOf="parent"
-				android:layout_marginTop="16dp"/>
-
-			<!-- Questionnaire Section -->
-			<LinearLayout
-				android:id="@+id/layoutQuestions"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:orientation="vertical"
-				android:visibility="gone"
-				app:layout_constraintTop_toBottomOf="@id/progressBar"
-				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintEnd_toEndOf="parent"
-				android:layout_marginTop="24dp">
-
-				<TextView
-					android:id="@+id/textQuestion"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:textAppearance="?attr/textAppearanceHeadline6"
-					android:textColor="@color/colorOnSurface"
-					android:layout_marginBottom="8dp"/>
-					
-				<LinearLayout
-					android:id="@+id/checkboxContainer"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:orientation="vertical"
-					android:layout_marginBottom="8dp"/>
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        app:titleTextColor="@android:color/white" />
 
 
-				<com.google.android.material.textfield.TextInputLayout
-					android:id="@+id/freeTextInputLayout"
-					style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:visibility="gone"
-					app:boxBackgroundMode="filled"
-					android:layout_marginBottom="16dp">
 
-					<com.google.android.material.textfield.TextInputEditText
-						android:id="@+id/editTextFree"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:hint="@string/your_answer_hint" />
-				</com.google.android.material.textfield.TextInputLayout>
 
-				<com.google.android.material.button.MaterialButton
-					android:id="@+id/buttonNext"
-					style="@style/ModernButtonStyle"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="@string/next"
-					android:layout_marginBottom="16dp"
-					android:layout_gravity="center_horizontal"/>
-			</LinearLayout>
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/scrollContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorBackground"
+        android:padding="16dp">
 
-			<!-- Results Section (for product cards, etc.) -->
-			<LinearLayout
-				android:id="@+id/layoutResults"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:orientation="vertical"
-				android:visibility="gone"
-				app:layout_constraintTop_toBottomOf="@id/layoutQuestions"
-				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintEnd_toEndOf="parent"
-				android:layout_marginTop="24dp"/>
-		</androidx.constraintlayout.widget.ConstraintLayout>
-	</ScrollView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/mainLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <!-- Container for initial input (query, spinners) -->
+            <LinearLayout
+                android:id="@+id/initialInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="16dp">
+
+                <!-- Query input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/inputLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="filled"
+                    android:layout_marginBottom="12dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextQuery"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/what_product_hint"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <!-- Start Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonStart"
+                style="@style/ModernButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/start"
+                app:layout_constraintTop_toBottomOf="@id/initialInputLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- ProgressBar for loading -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/buttonStart"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="16dp"/>
+
+            <!-- Questionnaire Section -->
+            <LinearLayout
+                android:id="@+id/layoutQuestions"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/progressBar"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="24dp">
+
+                <TextView
+                    android:id="@+id/textQuestion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textColor="@color/colorOnSurface"
+					style="@style/TextInputStyle"
+                    android:layout_marginBottom="8dp"/>
+
+                <LinearLayout
+                    android:id="@+id/checkboxContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="8dp"/>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/freeTextInputLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:boxBackgroundMode="filled"
+                    android:layout_marginBottom="16dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextFree"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/your_answer_hint" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonNext"
+                    style="@style/ModernButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/next"
+                    android:layout_marginBottom="16dp"
+                    android:layout_gravity="center_horizontal"/>
+            </LinearLayout>
+
+            <!-- Results Section (for product cards, etc.) -->
+            <LinearLayout
+                android:id="@+id/layoutResults"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/layoutQuestions"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="24dp"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </LinearLayout>

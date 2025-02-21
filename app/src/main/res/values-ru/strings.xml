@@ -13,4 +13,8 @@
     <string name="additional_info_question">Добавьте любую дополнительную информацию (до 100 символов)</string>
     <string name="max_hundred_chars">Максимум 100 символов</string>
     <string name="error_general">Возникла ошибка. Пожалуйста, попробуйте позже.</string>
+
+    <string name="settings">Настройки</string>
+    <string name="country">Страна</string>
+    <string name="language">Язык</string>
 </resources>
