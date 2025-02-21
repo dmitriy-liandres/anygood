@@ -1,14 +1,14 @@
-package store.anygood.model;
-
+package store.anygood.model.dto;
 
 
 import java.util.List;
 
-public class GenerateQuestionRequest {
+public class ProductRecommendationRequestDTO {
     private String initialQuery;
     private String selectedCountry;
     private String selectedLanguage;
-    private List<QuestionWithAnswer> questionsWithAnswers;
+    private List<QuestionWithAnswerDTO> questionsWithAnswers;
+    private String additionalInfo;
 
     // Getters and setters
 
@@ -36,11 +36,19 @@ public class GenerateQuestionRequest {
         this.selectedLanguage = selectedLanguage;
     }
 
-    public List<QuestionWithAnswer> getQuestionsWithAnswers() {
+    public List<QuestionWithAnswerDTO> getQuestionsWithAnswers() {
         return questionsWithAnswers;
     }
 
-    public void setQuestionsWithAnswers(List<QuestionWithAnswer> questionsWithAnswers) {
+    public void setQuestionsWithAnswers(List<QuestionWithAnswerDTO> questionsWithAnswers) {
         this.questionsWithAnswers = questionsWithAnswers;
+    }
+
+    public String getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void setAdditionalInfo(String additionalInfo) {
+        this.additionalInfo = additionalInfo;
     }
 }

@@ -9,17 +9,18 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.Spinner;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import java.util.Locale;
 
+import helpers.ApplicationHelper;
+
 public class SettingsActivity extends AppCompatActivity {
     private AutoCompleteTextView dropdownLanguage, dropdownCountry ;
     private Button buttonSave;
-    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +46,8 @@ public class SettingsActivity extends AppCompatActivity {
 
 
         // Load saved prefs
-        prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        String savedLanguage = prefs.getString("selectedLanguage", "English");
-        String savedCountry = prefs.getString("selectedCountry", "United States");
+        String savedLanguage = ApplicationHelper.getUserLanguage(this);
+        String savedCountry = ApplicationHelper.getUserCountry(this);
 
         dropdownCountry.setText(savedCountry, false);
         dropdownLanguage.setText(savedLanguage, false);
@@ -57,7 +57,7 @@ public class SettingsActivity extends AppCompatActivity {
             String selectedLang = dropdownLanguage.getText().toString();
             String selectedCountry = dropdownCountry.getText().toString();
 
-            SharedPreferences.Editor editor = prefs.edit();
+            SharedPreferences.Editor editor = getSharedPreferences("MyPrefs", MODE_PRIVATE).edit();
             editor.putString("selectedLanguage", selectedLang);
             editor.putString("selectedCountry", selectedCountry);
             editor.apply();

@@ -1,11 +1,11 @@
-package store.anygood.model;
+package store.anygood.model.dto;
 
-public class Product {
+public class ProductDTO {
     private String name;
     private String price;
     private String keyword; // This keyword will be used to generate the Amazon link
 
-    public Product(String name, String price, String keyword) {
+    public ProductDTO(String name, String price, String keyword) {
         this.name = name;
         this.price = price;
         this.keyword = keyword;

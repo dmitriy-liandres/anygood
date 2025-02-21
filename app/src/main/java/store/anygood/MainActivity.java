@@ -3,7 +3,6 @@ package store.anygood;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -32,12 +31,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import helpers.ApplicationHelper;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-import store.anygood.model.Product;
-import store.anygood.model.Question;
-import store.anygood.model.QuestionWithAnswer;
+import store.anygood.model.dto.ProductDTO;
+import store.anygood.model.dto.QuestionDTO;
+import store.anygood.model.dto.QuestionWithAnswerDTO;
+import store.anygood.model.dto.TelephoneInfoDTO;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     // Data for questionnaire
-    private List<QuestionWithAnswer> questionsWithAnswers = new ArrayList<>();
+    private List<QuestionWithAnswerDTO> questionsWithAnswers = new ArrayList<>();
 
     private static final int TOTAL_QUESTIONS = 10; // from ChatGPT
     private String initialQuery; // The user's initial query
@@ -75,8 +76,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // 1) Load user’s stored language
-        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        String savedLanguage = prefs.getString("selectedLanguage", "English");
+        String savedLanguage = ApplicationHelper.getUserLanguage(this);
 
         // 2) Update the locale *before* calling super.onCreate
         updateLocale(savedLanguage);
@@ -117,8 +117,12 @@ public class MainActivity extends AppCompatActivity {
             buttonStart.setVisibility(View.GONE);
             layoutQuestionsCard.setVisibility(View.GONE);
 
+            TelephoneInfoDTO telephoneInfo = new TelephoneInfoDTO(ApplicationHelper.getAndroidID(this),
+                    ApplicationHelper.getUserCountry(this),
+                    ApplicationHelper.getUserLanguage(this)
+            );
 
-            chatGPTClient.login("null", "null", new Callback() {
+            chatGPTClient.login(telephoneInfo, "test", "test", new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     runOnUiThread(() ->
@@ -158,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            QuestionWithAnswer questionWithAnswer = questionsWithAnswers.get(questionsWithAnswers.size() - 1);
+            QuestionWithAnswerDTO questionWithAnswer = questionsWithAnswers.get(questionsWithAnswers.size() - 1);
             questionWithAnswer.setAnswers(answers);
 
             // Append question & answer to conversation
@@ -191,9 +195,8 @@ public class MainActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         layoutQuestionsCard.setVisibility(View.GONE);
 
-        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        String savedLanguage = prefs.getString("selectedLanguage", "English");
-        String savedCountry = prefs.getString("selectedCountry", "United States");
+        String savedLanguage = ApplicationHelper.getUserLanguage(this);
+        String savedCountry = ApplicationHelper.getUserCountry(this);
 
 
         chatGPTClient.generateNextQuestion(initialQuery,
@@ -202,13 +205,13 @@ public class MainActivity extends AppCompatActivity {
                 questionsWithAnswers,
                 new ChatGPTClient.NextQuestionCallback() {
                     @Override
-                    public void onQuestionReceived(Question question) {
+                    public void onQuestionReceived(QuestionDTO question) {
                         runOnUiThread(() -> {
                             // Show question in UI
                             if (question.isLast()) {
                                 showAdditionalInfoQuestion();
                             } else {
-                                questionsWithAnswers.add(new QuestionWithAnswer(question));
+                                questionsWithAnswers.add(new QuestionWithAnswerDTO(question));
                                 showCurrentQuestion();
                             }
                         });
@@ -231,10 +234,9 @@ public class MainActivity extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
 
 
-
         layoutQuestionsCard.setVisibility(View.VISIBLE);
 
-        Question currentQuestion = questionsWithAnswers.get(questionsWithAnswers.size() - 1).getQuestion();
+        QuestionDTO currentQuestion = questionsWithAnswers.get(questionsWithAnswers.size() - 1).getQuestion();
 
         textQuestion.setText(currentQuestion.getText());
         editTextFree.setText("");
@@ -273,9 +275,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if (editTextFree.getVisibility() == View.VISIBLE ) {
+        if (editTextFree.getVisibility() == View.VISIBLE) {
             String text = editTextFree.getText().toString().trim();
-            if(text.length() > 0) {
+            if (text.length() > 0) {
                 selectedOptions.add(editTextFree.getText().toString().trim());
             }
         }
@@ -304,9 +306,8 @@ public class MainActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         layoutQuestionsCard.setVisibility(View.GONE);
 
-        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        String savedLanguage = prefs.getString("selectedLanguage", "English");
-        String savedCountry = prefs.getString("selectedCountry", "United States");
+        String savedLanguage = ApplicationHelper.getUserLanguage(this);
+        String savedCountry = ApplicationHelper.getUserCountry(this);
 
         chatGPTClient.getProductRecommendations(initialQuery,
                 savedCountry,
@@ -315,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
                 editTextFree.getText().toString(),
                 new ChatGPTClient.RecommendationsCallback() {
                     @Override
-                    public void onRecommendationsReceived(List<Product> recommendedProducts) {
+                    public void onRecommendationsReceived(List<ProductDTO> recommendedProducts) {
                         // show recommendations
                         runOnUiThread(() -> showProductRecommendations(recommendedProducts));
                     }
@@ -329,13 +330,13 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void showProductRecommendations(List<Product> products) {
+    private void showProductRecommendations(List<ProductDTO> products) {
         layoutQuestionsCard.setVisibility(View.GONE);
         layoutResults.removeAllViews();
         layoutResults.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
 
-        for (Product product : products) {
+        for (ProductDTO product : products) {
             // Wrap your Activity context with the custom card style
             Context cardContext = new ContextThemeWrapper(this, R.style.ModernCardStyle);
 
@@ -419,10 +420,11 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_SETTINGS && resultCode == Activity.RESULT_OK) {
             // The user changed the language
-            SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-            String savedLanguage = prefs.getString("selectedLanguage", "English");
+            String savedLanguage = ApplicationHelper.getUserLanguage(this);
             updateLocale(savedLanguage);
             recreate(); // Now this re-creates MainActivity in the new language
         }
     }
+
+
 }

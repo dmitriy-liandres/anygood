@@ -1,25 +1,25 @@
-package store.anygood.model;
+package store.anygood.model.dto;
 
 
 import java.util.List;
 
-public class Question {
+public class QuestionDTO {
 
     private String text;
     private List<String> options;
     private boolean allowFreeText;
     private boolean last;
 
-    public Question() {
+    public QuestionDTO() {
 
     }
 
-    public Question(String text) {
+    public QuestionDTO(String text) {
         this.text = text;
     }
 
 
-    public Question(String text, List<String> options, boolean allowFreeText, boolean last) {
+    public QuestionDTO(String text, List<String> options, boolean allowFreeText, boolean last) {
         this.text = text;
         this.options = options;
         this.allowFreeText = allowFreeText;

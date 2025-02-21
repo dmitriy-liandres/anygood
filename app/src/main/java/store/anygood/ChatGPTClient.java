@@ -22,11 +22,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import store.anygood.model.GenerateQuestionRequest;
-import store.anygood.model.Product;
-import store.anygood.model.ProductRecommendationRequest;
-import store.anygood.model.Question;
-import store.anygood.model.QuestionWithAnswer;
+import store.anygood.model.dto.GenerateQuestionRequestDTO;
+import store.anygood.model.dto.ProductDTO;
+import store.anygood.model.dto.ProductRecommendationRequestDTO;
+import store.anygood.model.dto.QuestionDTO;
+import store.anygood.model.dto.QuestionWithAnswerDTO;
+import store.anygood.model.dto.TelephoneInfoDTO;
 
 public class ChatGPTClient {
 
@@ -49,7 +50,10 @@ public class ChatGPTClient {
      * Logs in the user and retrieves a JWT token.
      * The callback will receive the backend's response.
      */
-    public void login(String username, String password, Callback callback) {
+    public void login(TelephoneInfoDTO telephoneInfo, String username, String password, Callback callback) {
+
+        RequestBody body = RequestBody.create(new Gson().toJson(telephoneInfo), JSON_MEDIA_TYPE);
+
         HttpUrl url = HttpUrl.parse(BASE_URL + "/auth/login").newBuilder()
                 .addQueryParameter("username", username)
                 .addQueryParameter("password", password)
@@ -58,7 +62,7 @@ public class ChatGPTClient {
         // POST request with an empty body
         Request request = new Request.Builder()
                 .url(url)
-                .post(RequestBody.create("", null))
+                .post(body)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -70,12 +74,12 @@ public class ChatGPTClient {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    // Assume the response contains a JSON like {"token": "your_jwt_token"}
+                    // Assume the response contains a JSON like {"token": "jwt_token"}
                     String jsonResponse = response.body().string();
                     try {
-                        String token = new org.json.JSONObject(jsonResponse).getString("token");
+                        String token = new JSONObject(jsonResponse).getString("token");
                         setJwtToken(token);
-                    } catch (org.json.JSONException e) {
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
@@ -91,9 +95,9 @@ public class ChatGPTClient {
     public void generateNextQuestion(String initialQuery,
                                      String selectedCountry,
                                      String selectedLanguage,
-                                     List<QuestionWithAnswer> questionsWithAnswers,
+                                     List<QuestionWithAnswerDTO> questionsWithAnswers,
                                      NextQuestionCallback callback) {
-        GenerateQuestionRequest generateQuestionRequest = new GenerateQuestionRequest();
+        GenerateQuestionRequestDTO generateQuestionRequest = new GenerateQuestionRequestDTO();
         generateQuestionRequest.setInitialQuery(initialQuery);
         generateQuestionRequest.setSelectedCountry(selectedCountry);
         generateQuestionRequest.setSelectedLanguage(selectedLanguage);
@@ -121,7 +125,7 @@ public class ChatGPTClient {
                 String responseBody = response.body().string();
                 // Convert the JSON to a NextQuestionResponse object using Gson
                 Gson gson = new Gson();
-                Question result = gson.fromJson(responseBody, Question.class);
+                QuestionDTO result = gson.fromJson(responseBody, QuestionDTO.class);
                 callback.onQuestionReceived(result);
 
             }
@@ -135,10 +139,10 @@ public class ChatGPTClient {
     public void getProductRecommendations(String initialQuery,
                                           String selectedCountry,
                                           String selectedLanguage,
-                                          List<QuestionWithAnswer> questionsWithAnswers,
+                                          List<QuestionWithAnswerDTO> questionsWithAnswers,
                                           String additionalInfo,
                                           RecommendationsCallback callback) {
-        ProductRecommendationRequest productRecommendationRequest = new ProductRecommendationRequest();
+        ProductRecommendationRequestDTO productRecommendationRequest = new ProductRecommendationRequestDTO();
         productRecommendationRequest.setInitialQuery(initialQuery);
         productRecommendationRequest.setSelectedCountry(selectedCountry);
         productRecommendationRequest.setSelectedLanguage(selectedLanguage);
@@ -167,9 +171,9 @@ public class ChatGPTClient {
                 }
                 String responseBody = response.body().string();
                 Gson gson = new Gson();
-                Type productListType = new TypeToken<List<Product>>() {
+                Type productListType = new TypeToken<List<ProductDTO>>() {
                 }.getType();
-                List<Product> products = gson.fromJson(responseBody, productListType);
+                List<ProductDTO> products = gson.fromJson(responseBody, productListType);
                 callback.onRecommendationsReceived(products);
             }
         });
@@ -184,13 +188,13 @@ public class ChatGPTClient {
 
 
     public interface RecommendationsCallback {
-        void onRecommendationsReceived(List<Product> recommendedProducts);
+        void onRecommendationsReceived(List<ProductDTO> recommendedProducts);
 
         void onError(String error);
     }
 
     public interface NextQuestionCallback {
-        void onQuestionReceived(Question question);
+        void onQuestionReceived(QuestionDTO question);
 
         void onError(String error);
     }
