@@ -1,17 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- A neutral palette with a soft accent color -->
-    <color name="colorPrimary">#007AFF</color>        <!-- Bright blue for buttons -->
-    <color name="colorPrimaryVariant">#005ECF</color> <!-- Darker blue for pressed state -->
-    <color name="colorAccent">#007AFF</color> <!-- Change to blue -->
-    <color name="colorBackground">#F2F2F7</color>     <!-- Light gray background -->
-    <color name="colorSurface">#FFFFFF</color>        <!-- White for input fields -->
-    <color name="colorOnPrimary">#FFFFFF</color>      <!-- White text on primary color -->
-    <color name="colorOnSurface">#1C1C1E</color>      <!-- Dark text on surface -->
-	<color name="colorButtonText">#FFFFFF</color>    <!-- Button text color -->
-    <color name="ic_launcher_bg_color">#673AB7</color> <!-- Example purple -->
-    <color name="ic_launcher_bg_color_round">#9C27B0</color> <!-- Slightly different -->
-	
-	<color name="colorDropdownBackground">#EFF3F7</color> <!-- Light grayish background for settings-->
+    <color name="colorPrimary">#007AFF</color>        <!-- Blue for buttons/accents -->
+    <color name="colorPrimaryVariant">#005ECF</color> <!-- Darker blue if needed -->
+    <color name="colorAccent">#007AFF</color>
+    
+    <!-- Light gray background (like iOS-style) -->
+    <color name="colorBackground">#F2F2F7</color>
+    
+    <!-- White surface for cards -->
+    <color name="colorSurface">#FFFFFF</color>
+    
+    <!-- Text colors -->
+    <color name="colorOnPrimary">#FFFFFF</color>      <!-- White text on blue button -->
+    <color name="colorOnSurface">#1C1C1E</color>      <!-- Dark text on white or gray -->
+    
+    <!-- Button text color -->
+    <color name="colorButtonText">#FFFFFF</color>
 
+    <!-- If you use dropdown backgrounds for settings, etc. -->
+    <color name="colorDropdownBackground">#EFF3F7</color>
+	
+	 <color name="ic_launcher_bg_color">#FFFFFF</color>
+    <color name="ic_launcher_bg_color_round">#FFFFFF</color>
 </resources>

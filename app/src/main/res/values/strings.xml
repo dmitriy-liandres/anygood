@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AnyGood Store</string>
+    <string name="app_name">AnyGood Assistant</string>
     <string name="what_product_hint">What product are you looking for?</string>
     <string name="please_select_or_type">Please select an option or provide some text.</string>
     <string name="start">Start</string>

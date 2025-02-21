@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AnyGood Store</string>
+    <string name="app_name">AnyGood עוזר</string>
     <string name="what_product_hint">איזה מוצר אתה מחפש?</string>
     <string name="start">התחל</string>
     <string name="please_select_or_type">אנא בחר אפשרות או הזן טקסט משלך.</string>

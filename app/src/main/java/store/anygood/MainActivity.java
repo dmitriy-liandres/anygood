@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private TextInputEditText editTextQuery;
     private MaterialButton buttonStart;
     // Questionnaire UI elements
-    private LinearLayout layoutQuestions;
+    private MaterialCardView layoutQuestionsCard;
     private TextView textQuestion;
     private LinearLayout checkboxContainer;
     private TextInputLayout freeTextInputLayout;
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         buttonStart = findViewById(R.id.buttonStart);
 
         // Questionnaire views
-        layoutQuestions = findViewById(R.id.layoutQuestions);
+        layoutQuestionsCard = findViewById(R.id.layoutQuestionsCard);
         textQuestion = findViewById(R.id.textQuestion);
         checkboxContainer = findViewById(R.id.checkboxContainer);
         freeTextInputLayout = findViewById(R.id.freeTextInputLayout);
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
             // Hide initial input UI, show question UI, etc.
             findViewById(R.id.initialInputLayout).setVisibility(View.GONE);
             buttonStart.setVisibility(View.GONE);
-            layoutQuestions.setVisibility(View.VISIBLE);
+            layoutQuestionsCard.setVisibility(View.GONE);
 
 
             chatGPTClient.login("null", "null", new Callback() {
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void fetchNextQuestion() {
         progressBar.setVisibility(View.VISIBLE);
-        layoutQuestions.setVisibility(View.GONE);
+        layoutQuestionsCard.setVisibility(View.GONE);
 
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         String savedLanguage = prefs.getString("selectedLanguage", "English");
@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        layoutQuestions.setVisibility(View.VISIBLE);
+        layoutQuestionsCard.setVisibility(View.VISIBLE);
 
         Question currentQuestion = questionsWithAnswers.get(questionsWithAnswers.size() - 1).getQuestion();
 
@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
         textQuestion.setText(getString(R.string.additional_info_question));
         editTextFree.setText("");
 
-        layoutQuestions.setVisibility(View.VISIBLE);
+        layoutQuestionsCard.setVisibility(View.VISIBLE);
 
         freeTextInputLayout.setVisibility(View.VISIBLE);
         editTextFree.setVisibility(View.VISIBLE);
@@ -302,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void finishQuestionnaire() {
         progressBar.setVisibility(View.VISIBLE);
-        layoutQuestions.setVisibility(View.GONE);
+        layoutQuestionsCard.setVisibility(View.GONE);
 
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         String savedLanguage = prefs.getString("selectedLanguage", "English");
@@ -330,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showProductRecommendations(List<Product> products) {
-        layoutQuestions.setVisibility(View.GONE);
+        layoutQuestionsCard.setVisibility(View.GONE);
         layoutResults.removeAllViews();
         layoutResults.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
@@ -390,7 +390,7 @@ public class MainActivity extends AppCompatActivity {
     private void resetUI() {
         questionsWithAnswers = new ArrayList<>();
         layoutResults.setVisibility(View.GONE);
-        layoutQuestions.setVisibility(View.GONE);
+        layoutQuestionsCard.setVisibility(View.GONE);
         findViewById(R.id.initialInputLayout).setVisibility(View.VISIBLE);
         buttonStart.setVisibility(View.VISIBLE);
         editTextQuery.setText("");

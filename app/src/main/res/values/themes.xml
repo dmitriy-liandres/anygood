@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.AnyGoodStore" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.AnyGoodStore" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- We won't set statusBarColor/navigationBarColor to colorPrimary, 
+             so it stays light/neutral. -->
+    </style>
 </resources>

@@ -1,72 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme using Material Components -->
+
+    <!-- Base application theme -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Primary palette -->
-        <item name="android:colorBackground">@color/colorBackground</item>
-        <item name="android:textColor">@color/colorOnSurface</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
         <item name="colorSecondary">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="android:textColor">@color/colorOnSurface</item>
 
-        <!-- More default UI settings -->
-        <item name="android:statusBarColor">@color/colorPrimaryVariant</item>
-        <item name="android:navigationBarColor">@color/colorPrimaryVariant</item>
-
-        <!-- Let’s apply custom button and card styles by default -->
+        <!-- Do not force toolbar to be colorPrimary -->
         <item name="android:buttonStyle">@style/ModernButtonStyle</item>
         <item name="materialButtonStyle">@style/ModernButtonStyle</item>
         <item name="materialCardViewStyle">@style/ModernCardStyle</item>
     </style>
 
-    <!-- A slightly rounded MaterialButton with an accent color. -->
-      <style name="ModernButtonStyle" parent="Widget.MaterialComponents.Button">
-        <item name="android:layout_margin">8dp</item>
-        <item name="backgroundTint">@color/colorPrimary</item>
-        <item name="android:textColor">@color/colorButtonText</item>
+    <!-- Material button (blue background, white text, moderately rounded corners) -->
+    <style name="ModernButtonStyle" parent="Widget.MaterialComponents.Button">
         <item name="cornerFamily">rounded</item>
         <item name="cornerRadius">24dp</item>
+        <item name="backgroundTint">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorButtonText</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_margin">8dp</item>
         <item name="android:paddingLeft">24dp</item>
         <item name="android:paddingRight">24dp</item>
-        <item name="android:textSize">16sp</item>
     </style>
 
-    <!-- MaterialCardView style with subtle elevation and rounding. -->
+    <!-- Subtle elevation, rounded corners for CardViews -->
     <style name="ModernCardStyle" parent="Widget.MaterialComponents.CardView">
-        <item name="cardUseCompatPadding">true</item>
-        <item name="cardPreventCornerOverlap">true</item>
         <item name="cardCornerRadius">12dp</item>
         <item name="cardElevation">4dp</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="cardPreventCornerOverlap">true</item>
         <item name="android:layout_margin">8dp</item>
     </style>
-	
-	<style name="TextInputStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+
+    <!-- The main card style for the question area -->
+    <style name="QuestionCardStyle" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">6dp</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="cardPreventCornerOverlap">true</item>
+        <item name="android:layout_margin">16dp</item>
+        <item name="android:background">@color/colorSurface</item>
+    </style>
+
+    <!-- Bold question text, slightly larger -->
+    <style name="QuestionTitleStyle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorOnSurface</item>
+    </style>
+
+    <!-- More pill-like button for NEXT -->
+    <style name="PillButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerRadius">50dp</item>
+        <item name="backgroundTint">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorButtonText</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:paddingLeft">32dp</item>
+        <item name="android:paddingRight">32dp</item>
+    </style>
+
+    <!-- TextInput style (if needed for free text) -->
+    <style name="TextInputStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
         <item name="boxBackgroundMode">filled</item>
+        <item name="boxBackgroundColor">@android:color/white</item>
         <item name="boxCornerRadiusTopStart">12dp</item>
         <item name="boxCornerRadiusTopEnd">12dp</item>
         <item name="boxCornerRadiusBottomStart">12dp</item>
         <item name="boxCornerRadiusBottomEnd">12dp</item>
     </style>
-	
-	<!--settings-->
-	
-	<style name="SettingsTitleText" parent="TextAppearance.MaterialComponents.Headline6">
-		<item name="android:textSize">24sp</item>
-		<item name="android:textStyle">bold</item>
-		<item name="android:textColor">@color/colorOnSurface</item>
-	</style>
 
-	<style name="SettingsDropdownStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
-		<item name="boxBackgroundMode">filled</item>
-		<item name="boxBackgroundColor">@color/colorDropdownBackground</item>
-		<item name="android:textColor">@color/colorOnSurface</item>
-		<item name="hintTextColor">@color/colorPrimary</item>
-	</style>
+    <!-- Settings styles (unchanged) -->
+    <style name="SettingsTitleText" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorOnSurface</item>
+    </style>
 
-	<style name="SettingsButtonStyle" parent="Widget.MaterialComponents.Button">
-		<item name="android:layout_width">match_parent</item>
-		<item name="android:backgroundTint">@color/colorPrimary</item>
-		<item name="android:textColor">@color/colorOnPrimary</item>
-		<item name="cornerRadius">16dp</item>
-	</style>
+    <style name="SettingsDropdownStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxBackgroundMode">filled</item>
+        <item name="boxBackgroundColor">@color/colorDropdownBackground</item>
+        <item name="android:textColor">@color/colorOnSurface</item>
+        <item name="hintTextColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="SettingsButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:backgroundTint">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorOnPrimary</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+
 </resources>
