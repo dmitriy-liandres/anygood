@@ -33,15 +33,8 @@ public class ApplicationHelper {
         SharedPreferences prefs = context.getSharedPreferences("MyPrefs", MODE_PRIVATE);
         String savedCountry = prefs.getString("selectedCountry", null);
         if (savedCountry == null) {
-            String LanguageCode = Locale.getDefault().getCountry().toLowerCase();
-            switch (LanguageCode) {
-                case "ru":
-                    return "Россия";
-                case "he":
-                    return "ישראל";
-                default:
-                    return "United States";
-            }
+            String languageCode = Locale.getDefault().getCountry().toLowerCase();
+            return CountryMapGenerator.getCountryMap().get(languageCode);
         } else {
             return savedCountry;
         }

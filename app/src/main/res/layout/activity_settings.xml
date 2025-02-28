@@ -19,11 +19,31 @@
 			app:contentInsetStart="16dp"
 			app:contentInsetStartWithNavigation="16dp"
 			android:paddingTop="16dp"/> 
-		/> 
-
-		
 
 
+
+	<com.google.android.material.textfield.TextInputLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:hint="@string/language"
+		app:endIconMode="dropdown_menu"
+		app:boxBackgroundMode="outline"
+		android:paddingStart="8dp"
+		android:paddingEnd="8dp">
+
+		<AutoCompleteTextView
+			android:id="@+id/dropdownLanguage"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingStart="16dp"
+			android:paddingEnd="16dp"
+			android:inputType="none"
+			android:focusable="false"
+			android:textColor="@color/colorOnSurface"
+			android:textSize="16sp"/>
+	</com.google.android.material.textfield.TextInputLayout>
+	
 
 	<!-- Country Dropdown -->
 	<com.google.android.material.textfield.TextInputLayout
@@ -47,27 +67,6 @@
 			android:textSize="16sp"/>
 	</com.google.android.material.textfield.TextInputLayout>
 
-	<com.google.android.material.textfield.TextInputLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="16dp"
-		android:hint="@string/language"
-		app:endIconMode="dropdown_menu"
-		app:boxBackgroundMode="outline"
-		android:paddingStart="8dp"
-		android:paddingEnd="8dp">
-
-		<AutoCompleteTextView
-			android:id="@+id/dropdownLanguage"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:paddingStart="16dp"
-			android:paddingEnd="16dp"
-			android:inputType="none"
-			android:focusable="false"
-			android:textColor="@color/colorOnSurface"
-			android:textSize="16sp"/>
-	</com.google.android.material.textfield.TextInputLayout>
 
 
 

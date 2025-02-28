@@ -3,16 +3,22 @@ package store.anygood;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,17 +66,22 @@ public class MainActivity extends AppCompatActivity {
     // Progress indicator
     private ProgressBar progressBar;
 
-    // Data for questionnaire
-    private List<QuestionWithAnswerDTO> questionsWithAnswers = new ArrayList<>();
-
     private static final int TOTAL_QUESTIONS = 10; // from ChatGPT
     private String initialQuery; // The user's initial query
 
     private boolean isAdditionalInfoPhase = false; // after 5 ChatGPT questions
 
+    private QuestionDTO currentQuestionDTO;
+
+    private List<ProductDTO> products = new ArrayList<>();
+
+    private String searchSessionId = "";
+
     private static final int REQUEST_SETTINGS = 1001; // or any unique integer
 
     private static final ChatGPTClient chatGPTClient = new ChatGPTClient();
+
+    private MaterialButton btnLoadMore;
 
 
     @Override
@@ -102,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         // Results layout
         layoutResults = findViewById(R.id.layoutResults);
 
-        // Progress bar
+        // Progress bars
         progressBar = findViewById(R.id.progressBar);
 
         buttonStart.setOnClickListener(v -> {
@@ -161,13 +172,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, getString(R.string.please_select_or_type), Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            QuestionWithAnswerDTO questionWithAnswer = questionsWithAnswers.get(questionsWithAnswers.size() - 1);
-            questionWithAnswer.setAnswers(answers);
-
             // Append question & answer to conversation
-
-            if (!questionWithAnswer.getQuestion().isLast() && questionsWithAnswers.size() < TOTAL_QUESTIONS) {
+            if (!currentQuestionDTO.isLast()) {
                 // Request the next question from ChatGPT
                 fetchNextQuestion();
             } else {
@@ -198,21 +204,24 @@ public class MainActivity extends AppCompatActivity {
         String savedLanguage = ApplicationHelper.getUserLanguage(this);
         String savedCountry = ApplicationHelper.getUserCountry(this);
 
-
-        chatGPTClient.generateNextQuestion(initialQuery,
+        QuestionWithAnswerDTO questionWithAnswerDTO = new QuestionWithAnswerDTO();
+        questionWithAnswerDTO.setQuestionId(currentQuestionDTO == null ? null : currentQuestionDTO.getQuestionId());
+        questionWithAnswerDTO.setAnswers(getUserAnswer());
+        chatGPTClient.generateNextQuestion(searchSessionId,
+                initialQuery,
                 savedCountry,
                 savedLanguage,
-                questionsWithAnswers,
+                questionWithAnswerDTO,
                 new ChatGPTClient.NextQuestionCallback() {
                     @Override
-                    public void onQuestionReceived(QuestionDTO question) {
+                    public void onQuestionReceived(String searchSessionId, QuestionDTO question) {
                         runOnUiThread(() -> {
+                            MainActivity.this.searchSessionId = searchSessionId;
                             // Show question in UI
                             if (question.isLast()) {
                                 showAdditionalInfoQuestion();
                             } else {
-                                questionsWithAnswers.add(new QuestionWithAnswerDTO(question));
-                                showCurrentQuestion();
+                                showCurrentQuestion(question);
                             }
                         });
                     }
@@ -227,7 +236,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void showCurrentQuestion() {
+    private void showCurrentQuestion(QuestionDTO question) {
+        this.currentQuestionDTO = question;
         // Clear UI
         checkboxContainer.removeAllViews();
         checkboxContainer.setVisibility(View.VISIBLE);
@@ -236,14 +246,12 @@ public class MainActivity extends AppCompatActivity {
 
         layoutQuestionsCard.setVisibility(View.VISIBLE);
 
-        QuestionDTO currentQuestion = questionsWithAnswers.get(questionsWithAnswers.size() - 1).getQuestion();
-
-        textQuestion.setText(currentQuestion.getText());
+        textQuestion.setText(question.getText());
         editTextFree.setText("");
 
-        if (!currentQuestion.getOptions().isEmpty()) {
+        if (!question.getOptions().isEmpty()) {
             // Add each option
-            for (String opt : currentQuestion.getOptions()) {
+            for (String opt : question.getOptions()) {
                 CheckBox cb = new CheckBox(this);
                 cb.setText(opt);
                 checkboxContainer.addView(cb);
@@ -251,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
             // Show or hide free texteditTextFree.setVisibility(View.VISIBLE);
         }
         // If no options => free text only
-        if (currentQuestion.isAllowFreeText()) {
+        if (question.isAllowFreeText()) {
             freeTextInputLayout.setVisibility(View.VISIBLE);
             editTextFree.setVisibility(View.VISIBLE);
         } else {
@@ -306,13 +314,8 @@ public class MainActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         layoutQuestionsCard.setVisibility(View.GONE);
 
-        String savedLanguage = ApplicationHelper.getUserLanguage(this);
-        String savedCountry = ApplicationHelper.getUserCountry(this);
-
-        chatGPTClient.getProductRecommendations(initialQuery,
-                savedCountry,
-                savedLanguage,
-                questionsWithAnswers,
+        chatGPTClient.getProductRecommendations(
+                searchSessionId,
                 editTextFree.getText().toString(),
                 new ChatGPTClient.RecommendationsCallback() {
                     @Override
@@ -336,60 +339,143 @@ public class MainActivity extends AppCompatActivity {
         layoutResults.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
 
-        for (ProductDTO product : products) {
-            // Wrap your Activity context with the custom card style
-            Context cardContext = new ContextThemeWrapper(this, R.style.ModernCardStyle);
+        this.products.addAll(products);
 
-            // Create the MaterialCardView using 2-arg or 3-arg constructor
+        for (ProductDTO product : this.products) {
+            Context cardContext = new ContextThemeWrapper(this, R.style.ModernCardStyle);
             MaterialCardView card = new MaterialCardView(cardContext);
 
-            // Optionally set LayoutParams if needed
             LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            cardParams.setMargins(0, 8, 0, 8);
+            cardParams.setMargins(0, 16, 0, 16);
             card.setLayoutParams(cardParams);
+            card.setCardElevation(4f);
+            card.setRadius(12f);
 
-            // Add an internal layout for content
             LinearLayout cardLayout = new LinearLayout(cardContext);
             cardLayout.setOrientation(LinearLayout.VERTICAL);
-            cardLayout.setPadding(24, 24, 24, 24);
+            cardLayout.setPadding(32, 32, 32, 32);
 
-            // Product name
             TextView productName = new TextView(cardContext);
             productName.setText(product.getName());
-            productName.setTextSize(16f);
+            productName.setTextSize(18f);
+            productName.setTypeface(null, Typeface.BOLD);
             productName.setTextColor(getResources().getColor(R.color.colorOnSurface));
             cardLayout.addView(productName);
 
-            // “Buy” button
-            MaterialButton btnBuy = new MaterialButton(cardContext);
-            btnBuy.setText(getString(R.string.buy));
-            btnBuy.setOnClickListener(v -> {
-                // Use your own logic to open product link
-                String url = AmazonApiClient.generateAmazonLink(product.getKeyword());
+            // Add space between product name and description
+            Space space = new Space(cardContext);
+            LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    16
+            );
+            space.setLayoutParams(spaceParams);
+            cardLayout.addView(space);
+
+            TextView productDescription = new TextView(cardContext);
+            productDescription.setText(product.getDescription());
+            productDescription.setTextSize(16f);
+            productDescription.setLineSpacing(2f, 1.2f);
+            productDescription.setTextColor(getResources().getColor(R.color.colorOnSurface));
+            cardLayout.addView(productDescription);
+
+            MaterialButton btnFind = new MaterialButton(cardContext);
+            btnFind.setText(getString(R.string.find));
+            btnFind.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorSuccess)));
+            btnFind.setCornerRadius(24);
+            btnFind.setOnClickListener(v -> {
+                String url = product.getLink();
                 Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 startActivity(i);
             });
-            cardLayout.addView(btnBuy);
+            cardLayout.addView(btnFind);
 
-            // Add cardLayout to the card
             card.addView(cardLayout);
-            // Add the card to layoutResults
             layoutResults.addView(card);
         }
 
-        // Add a “Start Again” button at the end
-        MaterialButton btnRestart = new MaterialButton(this);
-        btnRestart.setText(getString(R.string.start_again));
-        btnRestart.setOnClickListener(v -> resetUI());
-        layoutResults.addView(btnRestart);
+        FrameLayout btnContainer = new FrameLayout(this);
+        FrameLayout.LayoutParams containerParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        btnContainer.setLayoutParams(containerParams);
+
+        //if the button hasn't been created, let's create it
+        btnLoadMore = new MaterialButton(this);
+        btnLoadMore.setText(getString(R.string.load_more));
+        btnLoadMore.setTextSize(12f);
+        btnLoadMore.setLayoutParams(new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        ProgressBar progressLoader = new ProgressBar(this);
+        FrameLayout.LayoutParams loaderParams = new FrameLayout.LayoutParams(
+                80, 80, Gravity.CENTER // Center the loader over the button
+        );
+        progressLoader.setLayoutParams(loaderParams);
+
+
+        if (this.products.size() < 10) {
+            btnLoadMore.setEnabled(true);
+            btnLoadMore.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+            btnLoadMore.setOnClickListener(v -> loadMoreRecommendations());
+            progressLoader.setVisibility(View.VISIBLE);
+        } else {
+            btnLoadMore.setEnabled(false);
+            btnLoadMore.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDisabled)));
+            progressLoader.setVisibility(View.GONE);
+        }
+
+        // Ensure the ProgressBar is drawn on top
+        btnContainer.addView(btnLoadMore);  // Add button first (background)
+        btnContainer.addView(progressLoader); // Add loader second (foreground)
+
+// Add the FrameLayout to layoutResults
+        layoutResults.addView(btnContainer);
+
+
+        MaterialButton btnStartOver = new MaterialButton(this);
+        btnStartOver.setText(getString(R.string.start_again));
+        btnStartOver.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorSecondaryVariant)));
+        btnStartOver.setOnClickListener(v -> resetUI());
+        layoutResults.addView(btnStartOver);
+
+    }
+
+    private void loadMoreRecommendations() {
+        disableLoadMore();
+
+        chatGPTClient.getProductRecommendationsAdditional(searchSessionId,
+                new ChatGPTClient.RecommendationsCallback() {
+                    @Override
+                    public void onRecommendationsReceived(List<ProductDTO> recommendedProducts) {
+                        // show recommendations
+                        runOnUiThread(() -> showProductRecommendations(recommendedProducts));
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        runOnUiThread(() ->
+                                Toast.makeText(MainActivity.this, "Error: " + error, Toast.LENGTH_LONG).show()
+                        );
+                    }
+                });
+
+    }
+
+    private void disableLoadMore() {
+        btnLoadMore.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDisabled)));
+        btnLoadMore.setEnabled(false); // Disable button to prevent multiple clicks
     }
 
 
     private void resetUI() {
-        questionsWithAnswers = new ArrayList<>();
+        currentQuestionDTO = null;
+        this.products = new ArrayList<>();
+        searchSessionId = "";
         layoutResults.setVisibility(View.GONE);
         layoutQuestionsCard.setVisibility(View.GONE);
         findViewById(R.id.initialInputLayout).setVisibility(View.VISIBLE);

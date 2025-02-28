@@ -1,33 +1,17 @@
 package store.anygood.model.dto;
 
-
 import java.util.List;
 
 public class QuestionWithAnswerDTO {
-    private QuestionDTO question;
+    private Long questionId;
     private List<String> answers;
 
-    // Constructors, getters, setters
-
-
-    public QuestionWithAnswerDTO() {
+    public Long getQuestionId() {
+        return questionId;
     }
 
-    public QuestionWithAnswerDTO(QuestionDTO question) {
-        this.question = question;
-    }
-
-    public QuestionWithAnswerDTO(QuestionDTO question, List<String> answers) {
-        this.question = question;
-        this.answers = answers;
-    }
-
-    public QuestionDTO getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(QuestionDTO questionDTO) {
-        this.question = questionDTO;
+    public void setQuestionId(Long questionId) {
+        this.questionId = questionId;
     }
 
     public List<String> getAnswers() {
@@ -36,5 +20,10 @@ public class QuestionWithAnswerDTO {
 
     public void setAnswers(List<String> answers) {
         this.answers = answers;
+    }
+
+    public QuestionWithAnswerDTO() {
+
+
     }
 }

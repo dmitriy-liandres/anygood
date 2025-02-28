@@ -14,9 +14,12 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Map;
 
 import helpers.ApplicationHelper;
+import helpers.CountryMapGenerator;
 
 public class SettingsActivity extends AppCompatActivity {
     private AutoCompleteTextView dropdownLanguage, dropdownCountry ;
@@ -27,8 +30,8 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        dropdownLanguage = findViewById(R.id.dropdownCountry);
-        dropdownCountry = findViewById(R.id.dropdownLanguage);
+        dropdownLanguage = findViewById(R.id.dropdownLanguage);
+        dropdownCountry = findViewById(R.id.dropdownCountry);
         buttonSave = findViewById(R.id.buttonSave);
 
         // Setup spinners
@@ -36,8 +39,8 @@ public class SettingsActivity extends AppCompatActivity {
         ArrayAdapter<String> languageAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, languages);
         dropdownLanguage.setAdapter(languageAdapter);
 
-        String[] countries = {"United States", "Россия", "ישראל"};
-        ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, countries);
+        Map<String, String> countriesMap = CountryMapGenerator.getCountryMap();
+        ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, new ArrayList<>(countriesMap.values()));
         dropdownCountry.setAdapter(countryAdapter);
 
         // Ensure dropdown opens when clicked
@@ -49,8 +52,9 @@ public class SettingsActivity extends AppCompatActivity {
         String savedLanguage = ApplicationHelper.getUserLanguage(this);
         String savedCountry = ApplicationHelper.getUserCountry(this);
 
-        dropdownCountry.setText(savedCountry, false);
         dropdownLanguage.setText(savedLanguage, false);
+        dropdownCountry.setText(savedCountry, false);
+
 
         buttonSave.setOnClickListener(v -> {
             // Save selected values in SharedPreferences
@@ -106,12 +110,6 @@ public class SettingsActivity extends AppCompatActivity {
                 return "ru";
             case "עברית":
                 return "he";
-            case "Arabic":
-                return "ar";
-            case "German":
-                return "de";
-            case "French":
-                return "fr";
             default:
                 return "en"; // English fallback
         }

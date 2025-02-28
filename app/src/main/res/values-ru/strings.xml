@@ -7,10 +7,11 @@
     <string name="your_answer_hint">Ваш ответ</string>
     <string name="next">Далее</string>
     <string name="no_preference">Без предпочтений</string>
-    <string name="buy">Найти</string>
+    <string name="find">Найти</string>
     <string name="start_again">Начать заново</string>
+    <string name="load_more">Загрузить больше рекомендаций</string>
     <string name="save">Сохранить</string>
-    <string name="additional_info_question">Добавьте любую дополнительную информацию (до 100 символов)</string>
+    <string name="additional_info_question">Добавьте любую дополнительную информацию</string>
     <string name="max_hundred_chars">Максимум 100 символов</string>
     <string name="error_general">Возникла ошибка. Пожалуйста, попробуйте позже.</string>
 

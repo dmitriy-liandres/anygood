@@ -33,16 +33,21 @@ public class ChatGPTClient {
 
     // Change this to your backend's URL
     private static final String BASE_URL = "http://10.0.2.2:8080";
+    //private static final String BASE_URL = "http://ec2-3-88-237-209.compute-1.amazonaws.com:8080";//http://10.0.2.2:8080";
     private static final MediaType JSON_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
 
     private OkHttpClient client;
     private String jwtToken;
 
+    private static final String SEARCH_SESSION_ID_HEADER = "searchSessionId";
+
+
+
     public ChatGPTClient() {
         client = new OkHttpClient.Builder()
-                .connectTimeout(600, TimeUnit.SECONDS) // Connection timeout
-                .readTimeout(600, TimeUnit.SECONDS)    // Read timeout
-                .writeTimeout(600, TimeUnit.SECONDS)   // Write timeout
+                .connectTimeout(60, TimeUnit.SECONDS) // Connection timeout
+                .readTimeout(60, TimeUnit.SECONDS)    // Read timeout
+                .writeTimeout(60, TimeUnit.SECONDS)   // Write timeout
                 .build();
     }
 
@@ -92,22 +97,67 @@ public class ChatGPTClient {
      * Calls the backend to generate the next question.
      * The caller must supply a list of QuestionWithAnswer objects.
      */
-    public void generateNextQuestion(String initialQuery,
+    public void generateNextQuestion(
+                                     String searchSessionId,
+                                     String initialQuery,
                                      String selectedCountry,
                                      String selectedLanguage,
-                                     List<QuestionWithAnswerDTO> questionsWithAnswers,
+                                     QuestionWithAnswerDTO questionWithAnswers,
                                      NextQuestionCallback callback) {
         GenerateQuestionRequestDTO generateQuestionRequest = new GenerateQuestionRequestDTO();
         generateQuestionRequest.setInitialQuery(initialQuery);
         generateQuestionRequest.setSelectedCountry(selectedCountry);
         generateQuestionRequest.setSelectedLanguage(selectedLanguage);
-        generateQuestionRequest.setQuestionsWithAnswers(questionsWithAnswers);
+        generateQuestionRequest.setQuestionWithAnswers(questionWithAnswers);
 
         RequestBody body = RequestBody.create(new Gson().toJson(generateQuestionRequest), JSON_MEDIA_TYPE);
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/generateNextQuestion")
+                .url(BASE_URL + "/api/generate_next_question")
                 .post(body)
                 .addHeader("Authorization", "Bearer " + jwtToken)
+                .addHeader(SEARCH_SESSION_ID_HEADER, searchSessionId)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onError(e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    callback.onError("Error: " + response);
+                    return;
+                }
+                String searchSessionId = response.header(SEARCH_SESSION_ID_HEADER);
+                String responseBody = response.body().string();
+                // Convert the JSON to a NextQuestionResponse object using Gson
+                Gson gson = new Gson();
+                QuestionDTO result = gson.fromJson(responseBody, QuestionDTO.class);
+                callback.onQuestionReceived(searchSessionId, result);
+
+            }
+        });
+    }
+
+
+    /**
+     * Calls the backend to get product recommendations.
+     */
+    public void getProductRecommendations(String searchSessionId,
+                                          String additionalInfo,
+                                          RecommendationsCallback callback) {
+        ProductRecommendationRequestDTO productRecommendationRequest = new ProductRecommendationRequestDTO();
+        productRecommendationRequest.setAdditionalInfo(additionalInfo);
+
+
+        RequestBody body = RequestBody.create(new Gson().toJson(productRecommendationRequest), JSON_MEDIA_TYPE);
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/get_product_recommendations")
+                .post(body)
+                .addHeader("Authorization", "Bearer " + jwtToken)
+                .addHeader(SEARCH_SESSION_ID_HEADER, searchSessionId)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -123,38 +173,27 @@ public class ChatGPTClient {
                     return;
                 }
                 String responseBody = response.body().string();
-                // Convert the JSON to a NextQuestionResponse object using Gson
                 Gson gson = new Gson();
-                QuestionDTO result = gson.fromJson(responseBody, QuestionDTO.class);
-                callback.onQuestionReceived(result);
-
+                Type productListType = new TypeToken<List<ProductDTO>>() {
+                }.getType();
+                List<ProductDTO> products = gson.fromJson(responseBody, productListType);
+                callback.onRecommendationsReceived(products);
             }
         });
     }
 
 
     /**
-     * Calls the backend to get product recommendations.
+     * Calls the backend to get product recommendations additional.
      */
-    public void getProductRecommendations(String initialQuery,
-                                          String selectedCountry,
-                                          String selectedLanguage,
-                                          List<QuestionWithAnswerDTO> questionsWithAnswers,
-                                          String additionalInfo,
-                                          RecommendationsCallback callback) {
-        ProductRecommendationRequestDTO productRecommendationRequest = new ProductRecommendationRequestDTO();
-        productRecommendationRequest.setInitialQuery(initialQuery);
-        productRecommendationRequest.setSelectedCountry(selectedCountry);
-        productRecommendationRequest.setSelectedLanguage(selectedLanguage);
-        productRecommendationRequest.setQuestionsWithAnswers(questionsWithAnswers);
-        productRecommendationRequest.setAdditionalInfo(additionalInfo);
+    public void getProductRecommendationsAdditional(String searchSessionId,
+                                                    RecommendationsCallback callback) {
 
-
-        RequestBody body = RequestBody.create(new Gson().toJson(productRecommendationRequest), JSON_MEDIA_TYPE);
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/getProductRecommendations")
-                .post(body)
+                .url(BASE_URL + "/api/get_product_recommendations_additional")
+                .post(RequestBody.create("", JSON_MEDIA_TYPE))
                 .addHeader("Authorization", "Bearer " + jwtToken)
+                .addHeader(SEARCH_SESSION_ID_HEADER, searchSessionId)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -194,7 +233,7 @@ public class ChatGPTClient {
     }
 
     public interface NextQuestionCallback {
-        void onQuestionReceived(QuestionDTO question);
+        void onQuestionReceived(String searchSessionId, QuestionDTO question);
 
         void onError(String error);
     }

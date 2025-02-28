@@ -39,22 +39,26 @@
                 android:layout_marginTop="16dp">
 
                 <!-- Query input -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/inputLayout"
-                    style="@style/TextInputStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:boxBackgroundMode="filled"
+				
+				<com.google.android.material.textfield.TextInputLayout
+					android:id="@+id/inputLayout"
+					style="@style/TextInputStyle"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					app:boxBackgroundMode="filled"
 					app:boxBackgroundColor="@android:color/white"
-                    android:layout_marginBottom="12dp">
+					android:layout_marginBottom="12dp"
+					app:counterEnabled="true"
+					app:counterMaxLength="100">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextQuery"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/what_product_hint"
-                        android:background="@android:color/transparent"						/>
-                </com.google.android.material.textfield.TextInputLayout>
+					<com.google.android.material.textfield.TextInputEditText
+						android:id="@+id/editTextQuery"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:hint="@string/what_product_hint"
+						android:background="@android:color/transparent"
+						android:maxLength="100"/>
+				</com.google.android.material.textfield.TextInputLayout>
 				
             </LinearLayout>
 
@@ -125,15 +129,19 @@
                         android:visibility="gone"
                         app:boxBackgroundMode="filled"
 						app:boxBackgroundColor="@android:color/white"
-                        android:layout_marginBottom="16dp">
+                        android:layout_marginBottom="16dp"
+						app:counterEnabled="true"
+						app:counterMaxLength="100">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/editTextFree"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/your_answer_hint" 
-							android:background="@android:color/transparent"/>
+							android:background="@android:color/transparent"
+							android:maxLength="100"/>
                     </com.google.android.material.textfield.TextInputLayout>
+					
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/buttonNext"

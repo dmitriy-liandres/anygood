@@ -1,5 +1,7 @@
 <resources>
     <color name="colorPrimary">#007AFF</color>        <!-- Blue for buttons/accents -->
+    <color name="colorPrimaryDisabled">#A3C3FF</color>        <!-- Blue for buttons/accents -->
+
     <color name="colorPrimaryVariant">#005ECF</color> <!-- Darker blue if needed -->
     <color name="colorAccent">#007AFF</color>
     
@@ -21,4 +23,8 @@
 	
 	 <color name="ic_launcher_bg_color">#FFFFFF</color>
     <color name="ic_launcher_bg_color_round">#FFFFFF</color>
+
+    <color name="colorSuccess">#4CAF50</color> <!-- Green -->
+    <color name="colorSecondaryVariant">#5A5A5A</color> <!-- Dark Gray -->
+
 </resources>

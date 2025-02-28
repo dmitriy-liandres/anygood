@@ -7,10 +7,11 @@
     <string name="your_answer_hint">Your answer</string>
     <string name="next">Next</string>
     <string name="no_preference">No preference</string>
-    <string name="buy">Find</string>
-    <string name="start_again">Start Again</string>
+    <string name="find">Find</string>
+    <string name="start_again">Start Over</string>
+    <string name="load_more">Load More Recommendations</string>
     <string name="save">Save</string>
-    <string name="additional_info_question">Provide any additional info (max 100 characters)</string>
+    <string name="additional_info_question">Provide any additional info</string>
     <string name="max_hundred_chars">Max 100 characters allowed</string>
     <string name="error_general">There was an error, please try again later.</string>
 
