@@ -32,8 +32,8 @@ import store.anygood.model.dto.TelephoneInfoDTO;
 public class ChatGPTClient {
 
     // Change this to your backend's URL
-    private static final String BASE_URL = "http://10.0.2.2:8080";
-    //private static final String BASE_URL = "http://ec2-3-88-237-209.compute-1.amazonaws.com:8080";//http://10.0.2.2:8080";
+    //private static final String BASE_URL = "http://10.0.2.2:8080";
+    private static final String BASE_URL = "http://ec2-3-88-237-209.compute-1.amazonaws.com:8080";//http://10.0.2.2:8080";
     private static final MediaType JSON_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
 
     private OkHttpClient client;

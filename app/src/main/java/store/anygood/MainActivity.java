@@ -8,7 +8,10 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.LocaleList;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -126,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
             // Hide initial input UI, show question UI, etc.
             findViewById(R.id.initialInputLayout).setVisibility(View.GONE);
             buttonStart.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
             layoutQuestionsCard.setVisibility(View.GONE);
 
             TelephoneInfoDTO telephoneInfo = new TelephoneInfoDTO(ApplicationHelper.getAndroidID(this),
@@ -192,9 +196,16 @@ public class MainActivity extends AppCompatActivity {
 
         Resources res = getResources();
         Configuration config = res.getConfiguration();
-        config.setLocale(locale);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            config.setLocales(new LocaleList(locale));
+            LocaleList.setDefault(new LocaleList(locale));
+        } else {
+            config.setLocale(locale);
+        }
 
         res.updateConfiguration(config, res.getDisplayMetrics());
+
     }
 
     private void fetchNextQuestion() {

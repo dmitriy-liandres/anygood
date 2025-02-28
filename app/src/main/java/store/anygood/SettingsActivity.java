@@ -109,7 +109,7 @@ public class SettingsActivity extends AppCompatActivity {
             case "Русский":
                 return "ru";
             case "עברית":
-                return "he";
+                return "il";
             default:
                 return "en"; // English fallback
         }
