@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.LocaleList;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -90,16 +89,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // 1) Load user’s stored language
-        String savedLanguage = ApplicationHelper.getUserLanguage(this);
+        String savedLanguageCode = ApplicationHelper.getUserLanguageCode(this);
 
         // 2) Update the locale *before* calling super.onCreate
-        updateLocale(savedLanguage);
+        ApplicationHelper.updateLocale(this, savedLanguageCode);
 
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle( getString(R.string.app_name));
 
         // Initial query views
         editTextQuery = findViewById(R.id.editTextQuery);
@@ -133,8 +134,8 @@ public class MainActivity extends AppCompatActivity {
             layoutQuestionsCard.setVisibility(View.GONE);
 
             TelephoneInfoDTO telephoneInfo = new TelephoneInfoDTO(ApplicationHelper.getAndroidID(this),
-                    ApplicationHelper.getUserCountry(this),
-                    ApplicationHelper.getUserLanguage(this)
+                    ApplicationHelper.getUserCountryFullName(this),
+                    ApplicationHelper.getUserLanguageFullName(this)
             );
 
             chatGPTClient.login(telephoneInfo, "test", "test", new Callback() {
@@ -187,33 +188,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void updateLocale(String language) {
-        // same approach: map "Russian" -> "ru" etc.
-        String languageCode = SettingsActivity.mapLanguageNameToCode(language);
-
-        Locale locale = new Locale(languageCode);
-        Locale.setDefault(locale);
-
-        Resources res = getResources();
-        Configuration config = res.getConfiguration();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            config.setLocales(new LocaleList(locale));
-            LocaleList.setDefault(new LocaleList(locale));
-        } else {
-            config.setLocale(locale);
-        }
-
-        res.updateConfiguration(config, res.getDisplayMetrics());
-
-    }
-
     private void fetchNextQuestion() {
         progressBar.setVisibility(View.VISIBLE);
         layoutQuestionsCard.setVisibility(View.GONE);
 
-        String savedLanguage = ApplicationHelper.getUserLanguage(this);
-        String savedCountry = ApplicationHelper.getUserCountry(this);
+        String savedLanguage = ApplicationHelper.getUserLanguageFullName(this);
+        String savedCountry = ApplicationHelper.getUserCountryFullName(this);
 
         QuestionWithAnswerDTO questionWithAnswerDTO = new QuestionWithAnswerDTO();
         questionWithAnswerDTO.setQuestionId(currentQuestionDTO == null ? null : currentQuestionDTO.getQuestionId());
@@ -515,10 +495,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_SETTINGS && resultCode == Activity.RESULT_OK) {
+        if (requestCode == REQUEST_SETTINGS && (resultCode == Activity.RESULT_OK || resultCode == Activity.RESULT_CANCELED)) {
             // The user changed the language
-            String savedLanguage = ApplicationHelper.getUserLanguage(this);
-            updateLocale(savedLanguage);
+            //String savedLanguageCode = ApplicationHelper.getUserLanguageCode(this);
+            //ApplicationHelper.updateLocale(this, savedLanguageCode);
             recreate(); // Now this re-creates MainActivity in the new language
         }
     }
