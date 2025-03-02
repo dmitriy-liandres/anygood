@@ -134,8 +134,8 @@ public class MainActivity extends AppCompatActivity {
             layoutQuestionsCard.setVisibility(View.GONE);
 
             TelephoneInfoDTO telephoneInfo = new TelephoneInfoDTO(ApplicationHelper.getAndroidID(this),
-                    ApplicationHelper.getUserCountryFullName(this),
-                    ApplicationHelper.getUserLanguageFullName(this)
+                    ApplicationHelper.getUserCountryCode(this),
+                    ApplicationHelper.getUserLanguageCode(this)
             );
 
             chatGPTClient.login(telephoneInfo, "test", "test", new Callback() {

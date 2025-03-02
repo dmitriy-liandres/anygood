@@ -43,15 +43,15 @@ public class ApplicationHelper {
 
     public static String getUserLanguageCode(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        return prefs.getString("selectedLanguageCode", null);
-    }
-
-    public static String getUserLanguageFullName(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences("MyPrefs", MODE_PRIVATE);
         String LanguageCode = prefs.getString("selectedLanguageCode", null);
         if (LanguageCode == null) {
             LanguageCode = Locale.getDefault().getLanguage().toLowerCase(); // Returns language code, e.g., "en"
         }
+        return LanguageCode;
+    }
+
+    public static String getUserLanguageFullName(Context context) {
+        String LanguageCode = getUserLanguageCode(context);
         return languages.get(LanguageCode);
     }
 
@@ -72,7 +72,7 @@ public class ApplicationHelper {
 
 
     public static void updateLocale(Context context, String languageCode) {
-        Locale locale = new Locale(languageCode);
+        Locale locale = new Locale(languageCode, Locale.getDefault().getCountry());
         Locale.setDefault(locale);
 
         Resources res = context.getResources();
